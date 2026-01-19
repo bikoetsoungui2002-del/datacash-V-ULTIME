@@ -19,20 +19,20 @@
         body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #1E293B; overflow-x: hidden; scroll-behavior: smooth; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         @keyframes slideInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulseDot { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
-
+        
         /* --- LOADER --- */
-        #loader { position: fixed; inset: 0; background: white; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #loader { position: fixed; inset: 0; background: white; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; display: none; }
         .loader-robot { width: 80px; height: 80px; background: var(--accent-grad); border-radius: 25px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; animation: float 2s infinite; box-shadow: 0 15px 40px rgba(37, 99, 235, 0.3); }
 
         /* --- NAVBAR --- */
         nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--glass); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.4rem; color: var(--primary); }
-        .btn-nav { background: var(--accent-grad); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; }
+        .btn-nav { background: var(--accent-grad); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-nav:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
 
         /* --- HERO --- */
         .hero { padding: 80px 5%; text-align: center; background: radial-gradient(circle at top right, #EEF2FF, white); }
-        .badge-flash { background: #FFF1F2; color: #E11D48; padding: 10px 20px; border-radius: 50px; display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; margin-bottom: 25px; border: 1px solid #FECDD3; animation: slideInUp 0.5s; }
+        .badge-flash { background: #FFF1F2; color: #E11D48; padding: 10px 20px; border-radius: 50px; display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; margin-bottom: 25px; border: 1px solid #FECDD3; }
         .hero h1 { font-size: clamp(2.5rem, 7vw, 4.5rem); font-weight: 900; line-height: 1.1; letter-spacing: -2px; margin-bottom: 20px; }
         .hero p { font-size: 1.2rem; color: #64748B; max-width: 800px; margin: 0 auto 40px; }
 
@@ -40,7 +40,7 @@
         .chart-section { padding: 40px 5%; max-width: 1000px; margin: 0 auto; }
         .chart-card { background: white; padding: 30px; border-radius: 30px; border: 1px solid #E2E8F0; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
         .bar-container { display: flex; align-items: flex-end; gap: 10px; height: 200px; margin-top: 30px; }
-        .bar { flex: 1; background: #E2E8F0; border-radius: 8px 8px 0 0; position: relative; transition: 1s ease-out; height: 0; }
+        .bar { flex: 1; background: #E2E8F0; border-radius: 8px 8px 0 0; position: relative; height: 0; transition: height 1.5s ease-out; }
         .bar.active { background: var(--accent-grad); }
         .bar-label { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; font-weight: 800; }
 
@@ -51,20 +51,12 @@
         .testi-card.visible { display: block; animation: slideInUp 0.5s; }
         .btn-more { margin-top: 30px; background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 12px 30px; border-radius: 50px; font-weight: 800; cursor: pointer; }
 
-        /* --- COMMENTAIRES --- */
-        .comment-section { padding: 60px 5%; max-width: 800px; margin: 0 auto; }
-        .comment-box { background: white; padding: 25px; border-radius: 24px; border: 1px solid #E2E8F0; }
-        .comment-input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #F1F5F9; margin-bottom: 15px; font-family: inherit; resize: none; box-sizing: border-box; }
-        #fake-comments-list { margin-top: 20px; }
-        .comment-item { padding: 15px; border-bottom: 1px solid #F1F5F9; display: flex; gap: 12px; }
-        .avatar { width: 40px; height: 40px; background: #E2E8F0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
-
         /* --- NOTIFICATIONS --- */
         #notif-container { position: fixed; bottom: 20px; left: 20px; z-index: 9999; pointer-events: none; }
         .notif-toast { background: white; padding: 12px 20px; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; margin-top: 10px; animation: slideInLeft 0.5s forwards; border-left: 4px solid #10B981; }
         @keyframes slideInLeft { from { transform: translateX(-120%); } to { transform: translateX(0); } }
 
-        /* --- FLOATING WA --- */
+        /* --- FLOATING WA (Assistance) --- */
         .wa-floating { position: fixed; bottom: 30px; right: 30px; background: #25D366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; box-shadow: 0 10px 25px rgba(37,211,102,0.4); z-index: 9999; text-decoration: none; }
     </style>
 </head>
@@ -73,7 +65,7 @@
     <div id="loader">
         <div class="loader-robot"><i class="ph-bold ph-robot"></i></div>
         <h2 style="margin-top:20px; font-weight:900;">DataCash AI</h2>
-        <p>Connexion au réseau sécurisé...</p>
+        <p>Connexion sécurisée vers l'application...</p>
     </div>
 
     <nav>
@@ -86,45 +78,30 @@
             <i class="ph-fill ph-lightning"></i> PACK FLASH DISPONIBLE : GAINS EN < 24H
         </div>
         <h1>Le Seul Système IA au monde <span style="color:var(--primary)">Garanti à 100%</span></h1>
-        <p>Plus de 600,000 membres génèrent des revenus journaliers sans aucun risque. La fiabilité de notre bot Flash est certifiée par 15 banques partenaires.</p>
+        <p>Plus de 600,000 membres génèrent des revenus journaliers sans aucun risque. La fiabilité de notre bot Flash est certifiée.</p>
         <button class="btn-nav" style="padding: 20px 50px; font-size: 1.2rem;" onclick="goToApp()">COMMENCER À GAGNER</button>
     </header>
 
     <section class="chart-section">
         <div class="chart-card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="margin:0; font-weight:800;">Analyse des Rendements IA</h3>
-                <span style="color:#10B981; font-weight:800;">+320.5% ce mois</span>
+                <h3 style="margin:0; font-weight:800;">Efficacité Algorithmique</h3>
+                <span style="color:#10B981; font-weight:800;">Fiabilité 100% Sûre</span>
             </div>
-            <div class="bar-container" id="performance-chart">
-                </div>
-            <p style="font-size:0.8rem; color:#64748B; margin-top:20px; text-align:center;">Graphique en temps réel : L'algorithme DataCash bat le marché de 150%.</p>
+            <div class="bar-container" id="performance-chart"></div>
         </div>
     </section>
 
     <section class="testi-section">
         <h2 style="font-weight:900; font-size:2rem;">La parole à nos 600,000 membres</h2>
-        <div class="testi-grid" id="testi-container">
-            </div>
+        <div class="testi-grid" id="testi-container"></div>
         <button class="btn-more" id="btn-show-more" onclick="showMoreTestimonials()">VOIR PLUS DE TÉMOIGNAGES</button>
     </section>
 
-    <section class="comment-section">
-        <h3 style="font-weight:900;">Laissez votre avis</h3>
-        <div class="comment-box">
-            <textarea id="user-comment" class="comment-input" rows="3" placeholder="Écrivez votre commentaire ici..."></textarea>
-            <button class="btn-nav" style="width:100%;" onclick="postFakeComment()">PUBLIER MON COMMENTAIRE</button>
-            
-            <div id="fake-comments-list">
-                <div class="comment-item">
-                    <div class="avatar" style="background:#2563EB; color:white;">B</div>
-                    <div>
-                        <div style="font-weight:800; font-size:0.9rem;">Benoit K. <span style="font-weight:400; font-size:0.7rem; color:#64748B;">• Il y a 2 min</span></div>
-                        <div style="font-size:0.85rem;">Enfin un site qui paye vraiment ! Le bot Flash est une pépite.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <section style="padding: 80px 5%; text-align: center; background: #1E293B; color: white;">
+        <h2 style="font-size: 2.5rem; font-weight: 900;">Prêt à changer de vie ?</h2>
+        <p style="opacity: 0.8; margin-bottom: 40px;">Rejoignez l'élite et commencez à encaisser vos gains dès demain.</p>
+        <button class="btn-nav" style="background: white; color: #1E293B; padding: 20px 50px; font-size: 1.1rem;" onclick="goToApp()">CRÉER MON COMPTE IA</button>
     </section>
 
     <div id="notif-container"></div>
@@ -134,7 +111,18 @@
     </a>
 
     <script>
-        // --- DONNÉES DES TÉMOIGNAGES (20+) ---
+        // --- LOGIQUE REDIRECTION VERS APP.HTML ---
+        function goToApp() {
+            // Afficher le loader avant de changer de page
+            document.getElementById('loader').style.display = 'flex';
+            
+            // Simuler un petit délai pour l'effet "technologique"
+            setTimeout(() => {
+                window.location.href = "app.html";
+            }, 1800);
+        }
+
+        // --- DONNÉES TÉMOIGNAGES ---
         const testimonials = [
             { name: "Samuel E.", loc: "Cameroun", text: "Le pack Flash m'a permis de doubler mon capital en moins de 24h. Incroyable !" },
             { name: "Fatou D.", loc: "Sénégal", text: "Enfin une plateforme sérieuse avec retrait Mobile Money rapide." },
@@ -158,38 +146,28 @@
             { name: "Inès Q.", loc: "Tchad", text: "La liberté financière est enfin possible ici." }
         ];
 
-        // --- DONNÉES NOTIFS (50+) ---
-        const users = ["Amadou K.", "Sophie M.", "Jean-Pierre B.", "Fatima S.", "Christian T.", "Mariam D.", "Ezechiel L.", "Koffi A.", "Aissatou P.", "Junior N.", "Gédéon M.", "Sarah W.", "Ibrahim Z.", "Modeste K.", "Clarisse Y.", "Rodrigue F.", "Esther V.", "Noël D.", "Blaise G.", "Félicité R.", "Arnaud S.", "Chantal M.", "Xavier B.", "Odile K.", "Patrice N.", "Sébastien T.", "Wilfried L.", "Vanessa J.", "Tidiane O.", "Nathalie G.", "Ulrich B.", "Prisca D.", "Guy-Noël S.", "Franck E.", "Béatrice K.", "Yasmine R.", "Serge M.", "Linda T.", "Célestin P.", "Daniella W.", "Achille F.", "Raïssa L.", "Jules K.", "Mélanie D.", "Brice A.", "Ornella S.", "Fabrice V.", "Solange G.", "Armand N.", "Irène B."];
-        const countries = ["Cameroun", "Côte d'Ivoire", "Sénégal", "Togo", "Bénin", "Mali", "Burkina", "Gabon", "RDC", "Congo", "Guinée", "Niger", "Tchad"];
+        const users = ["Amadou K.", "Sophie M.", "Jean-Pierre B.", "Fatima S.", "Christian T.", "Mariam D.", "Koffi A.", "Aissatou P.", "Junior N.", "Gédéon M."];
+        const countries = ["Cameroun", "Côte d'Ivoire", "Sénégal", "Togo", "Bénin", "Mali", "RDC", "Gabon"];
 
-        // --- INITIALISATION ---
         window.onload = () => {
-            // Loader
-            setTimeout(() => document.getElementById('loader').style.display='none', 1500);
+            // Charger Graphique
+            const chart = document.getElementById('performance-chart');
+            for(let i=0; i<7; i++) {
+                const h = [40, 60, 55, 85, 70, 95, 100][i];
+                chart.innerHTML += `<div class="bar ${i===6?'active':''}" style="height:${h}%"><span class="bar-label">${h}%</span></div>`;
+            }
 
-            // Charger les 5 premiers témoignages
-            const container = document.getElementById('testi-container');
+            // Charger Témoignages
+            const testiContainer = document.getElementById('testi-container');
             testimonials.forEach((t, i) => {
                 const card = document.createElement('div');
                 card.className = `testi-card ${i < 5 ? 'visible' : ''}`;
-                card.innerHTML = `
-                    <div style="font-weight:800; color:var(--primary); margin-bottom:5px;">${t.name}</div>
-                    <div style="font-size:0.7rem; color:#64748B; margin-bottom:10px;">${t.loc} • <i class="ph-fill ph-star" style="color:#F59E0B"></i> 5.0</div>
-                    <div style="font-size:0.85rem;">"${t.text}"</div>
-                `;
-                container.appendChild(card);
+                card.innerHTML = `<div style="font-weight:800; color:var(--primary);">${t.name}</div><small>${t.loc}</small><p style="font-size:0.85rem; margin-top:10px;">"${t.text}"</p>`;
+                testiContainer.appendChild(card);
             });
 
-            // Graphique
-            const chart = document.getElementById('performance-chart');
-            for(let i=0; i<7; i++) {
-                const h = Math.floor(Math.random() * 80) + 20;
-                chart.innerHTML += `<div class="bar ${i===6?'active':''}" style="height:${h}%"><span class="bar-label">${h+10}%</span></div>`;
-            }
-
-            // Démarrer Notifs
+            // Lancer les notifications
             setInterval(showRandomNotif, 5000);
-            showRandomNotif();
         };
 
         function showMoreTestimonials() {
@@ -201,42 +179,11 @@
             const container = document.getElementById('notif-container');
             const u = users[Math.floor(Math.random() * users.length)];
             const c = countries[Math.floor(Math.random() * countries.length)];
-            const amt = (Math.floor(Math.random() * 20) + 5) * 5000;
-            
             const toast = document.createElement('div');
             toast.className = 'notif-toast';
-            toast.innerHTML = `
-                <div style="background:var(--primary); color:white; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem;">${u.charAt(0)}</div>
-                <div>
-                    <div style="font-size:0.75rem; font-weight:800;">${u} (${c})</div>
-                    <div style="font-size:0.65rem; color:#10B981;">Vient de gagner ${amt.toLocaleString()} FCFA</div>
-                </div>
-            `;
+            toast.innerHTML = `<i class="ph-fill ph-user-circle" style="font-size:1.5rem; color:var(--primary);"></i><div><div style="font-size:0.75rem; font-weight:800;">${u} (${c})</div><div style="font-size:0.65rem; color:#10B981;">Vient de gagner +${(Math.floor(Math.random()*15)+5)*1000} FCFA</div></div>`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 4000);
-        }
-
-        function postFakeComment() {
-            const txt = document.getElementById('user-comment').value;
-            if(!txt) return;
-            const list = document.getElementById('fake-comments-list');
-            const item = document.createElement('div');
-            item.className = 'comment-item';
-            item.innerHTML = `
-                <div class="avatar" style="background:#F43F5E; color:white;">U</div>
-                <div>
-                    <div style="font-weight:800; font-size:0.9rem;">Vous <span style="font-weight:400; font-size:0.7rem; color:#64748B;">• À l'instant</span></div>
-                    <div style="font-size:0.85rem;">${txt}</div>
-                    <div style="font-size:0.7rem; color:#10B981; margin-top:5px;">✅ Publié avec succès</div>
-                </div>
-            `;
-            list.prepend(item);
-            document.getElementById('user-comment').value = '';
-        }
-
-        function goToApp() {
-            document.getElementById('loader').style.display = 'flex';
-            setTimeout(() => window.location.href = "index.html", 1500);
         }
     </script>
 </body>
