@@ -189,8 +189,10 @@
             </div>
 
             <input id="auth-email" type="email" placeholder="Email" style="margin-bottom:12px;">
-            <input id="auth-pass" type="password" placeholder="Mot de passe" style="margin-bottom:25px;">
-
+            <div style="position: relative; margin-bottom: 25px;">
+    <input id="auth-pass" type="password" placeholder="Mot de passe" style="margin-bottom: 0;">
+    <i class="ph-bold ph-eye" id="togglePassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted); font-size: 1.2rem;"></i>
+</div>
             <button class="btn-main" onclick="handleAuth()" id="btn-auth">
                 <span id="btn-txt">Connexion Sécurisée</span> <i class="ph-bold ph-arrow-right"></i>
             </button>
@@ -773,7 +775,19 @@
         };
         window.logout = () => { signOut(auth); location.reload(); };
         window.checkWithdraw = () => Swal.fire("Retrait", "Le seuil minimal est de 5,000 FCFA.", "info");
+       // --- FONCTION VOIR/CACHER MOT DE PASSE ---
+const toggleBtn = document.querySelector('#togglePassword');
+const passwordInput = document.querySelector('#auth-pass');
 
+toggleBtn.addEventListener('click', function () {
+    // On bascule le type entre 'password' et 'text'
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    
+    // On change l'icône (oeil ouvert / oeil barré)
+    this.classList.toggle('ph-eye');
+    this.classList.toggle('ph-eye-slash');
+}); 
     </script>
 </body>
 </html>
