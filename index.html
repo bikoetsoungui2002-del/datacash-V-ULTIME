@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DataCash - Guide</title>
+    <title>DataCash afrik</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -498,14 +498,17 @@
                     loadHistory(user.uid);
                     startFakeWithdrawals();
                     document.getElementById('auth-screen').style.display = 'none';
-                    // Si on était pas sur la page Tuto, on affiche l'app
+                    
                     if(!document.getElementById('page-tuto').classList.contains('active')){
                          document.getElementById('app-content').style.display = 'block';
                     }
-                    document.getElementById('loader').style.display = 'none';
                 }
+                // Masquer le loader une fois les données chargées
+                document.getElementById('loader').style.display = 'none';
             } else {
                 isUserLoggedIn = false;
+                // CORRECTION : Masquer le loader pour afficher l'écran de connexion si personne n'est connecté
+                document.getElementById('loader').style.display = 'none';
             }
         });
 
