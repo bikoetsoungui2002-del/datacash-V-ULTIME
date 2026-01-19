@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DataCash - Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            /* Palette Principale */
+            --primary: #2563EB;
+            --primary-soft: #EFF6FF;
+            --accent: #F43F5E;
+            --accent-grad: linear-gradient(135deg, #2563EB 0%, #F43F5E 100%);
+            --bg-body: #F1F5F9;
+            --card-bg: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --radius: 24px;
+        }
+
+        /* --- LAYOUT --- */
+        html, body {
+            margin: 0; padding: 0; 
+            width: 100%; height: 100%;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #E2E8F0;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #app-viewport {
+            background: var(--bg-body);
+            height: 100%;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin: 0 auto;
+            scrollbar-width: none;
+        }
+        #app-viewport::-webkit-scrollbar { display: none; }
+
+        @media (max-width: 480px) {
+            #app-viewport { width: 100%; border-radius: 0; }
+        }
+
+        @media (min-width: 481px) {
+            body { display: flex; align-items: center; justify-content: center; }
+            #app-viewport { 
+                width: 420px; height: 95vh; border-radius: 30px; 
+                box-shadow: 0 20px 60px rgba(37, 99, 235, 0.15); border: 8px solid #FFFFFF;
+            }
+        }
+
+        /* --- UI ELEMENTS --- */
+        .page { display: none; padding: 20px; padding-bottom: 100px; animation: fadeIn 0.4s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+
+        .card { 
+            background: var(--card-bg); border-radius: var(--radius); padding: 20px; margin-bottom: 15px; 
+            box-shadow: 0 10px 30px -10px rgba(148, 163, 184, 0.3); border: 1px solid rgba(255,255,255,0.8);
+        }
+        
+        input, select { 
+            width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #E2E8F0; 
+            background: #FFFFFF; font-weight: 600; outline: none; transition: 0.3s; 
+            font-family: inherit; font-size: 0.9rem; box-sizing: border-box;
+        }
+        input:focus, select:focus { border-color: var(--primary); background: #F8FAFC; }
+
+        .btn-main { 
+            background: var(--accent-grad); color: white; border: none; padding: 18px; 
+            border-radius: 18px; font-weight: 800; width: 100%; cursor: pointer; font-size: 1rem; 
+            box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.4); display: flex; 
+            justify-content: center; align-items: center; gap: 10px; transition: 0.2s;
+        }
+        .btn-main:active { transform: scale(0.97); }
+
+        /* --- PACKS --- */
+        .plans-container {
+            display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px 25px 5px;
+            scroll-snap-type: x mandatory; scroll-behavior: smooth;
+        }
+        .plans-container::-webkit-scrollbar { display: none; }
+
+        .plan-card {
+            min-width: 46%; border-radius: 24px; padding: 20px 10px; 
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            position: relative; scroll-snap-align: start; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        
+        .ai-badge {
+            font-size: 0.6rem; font-weight: 800; text-transform: uppercase; padding: 5px 10px;
+            border-radius: 20px; margin-bottom: 5px; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);
+        }
+
+        .gain-box {
+            background: #DCFCE7; border: 1px solid #86EFAC; padding: 8px; border-radius: 12px;
+            width: 100%; margin-top: 10px; box-sizing: border-box; color: #14532D;
+        }
+
+        /* --- NOTIFS --- */
+        .fake-notif-item {
+            font-size: 0.8rem; padding: 10px; background: white; border-radius: 12px;
+            margin-bottom: 8px; border-left: 4px solid #10B981; display: flex; 
+            justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            animation: slideInLeft 0.5s;
+        }
+        @keyframes slideInLeft { from {opacity:0; transform:translateX(-20px);} to {opacity:1; transform:translateX(0);} }
+
+        /* --- TUTORIAL PAGE STYLES --- */
+        .step-card {
+            background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px;
+            display: flex; gap: 15px; align-items: flex-start; border: 1px solid #E2E8F0;
+        }
+        .step-num {
+            background: var(--primary-soft); color: var(--primary); width: 35px; height: 35px;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-weight: 900; flex-shrink: 0; font-size: 1.1rem;
+        }
+        .step-content h4 { margin: 0 0 5px 0; font-weight: 800; color: var(--text-main); }
+        .step-content p { margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 85%; max-width: 360px; height: 65px;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
+            border-radius: 20px; display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.5); z-index: 1000;
+        }
+        .nav-icon { font-size: 1.6rem; color: #94A3B8; transition: 0.3s; }
+        .nav-icon.active { color: var(--primary); transform: translateY(-5px) scale(1.1); }
+        
+        .yt-btn {
+            background: white; border: 1px solid #E2E8F0; padding: 15px; border-radius: 16px;
+            display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%;
+            font-weight: 700; color: var(--text-main); cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="app-viewport">
+        
+        <div id="loader" style="position:fixed; inset:0; background:white; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="width:60px; height:60px; background:var(--accent-grad); border-radius:20px; display:flex; align-items:center; justify-content:center; color:white; font-size:2rem; box-shadow:0 10px 30px rgba(244,63,94,0.4);"><i class="ph-bold ph-robot"></i></div>
+            <h4 style="margin-top:20px; font-weight:800; background:var(--accent-grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">DATACASH AI</h4>
+        </div>
+
+        <section id="auth-screen" style="min-height:100%; display:flex; flex-direction:column; justify-content:center; padding:30px;">
+            <div style="text-align:center; margin-bottom:40px;">
+                <div style="width:80px; height:80px; background:var(--accent-grad); border-radius:24px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; color:white; font-size:2.5rem; transform:rotate(-5deg); box-shadow:0 15px 40px -10px rgba(37,99,235,0.5);"><i class="ph-fill ph-chart-line-up"></i></div>
+                <h1 style="font-size:2rem; font-weight:900;">Trading IA.</h1>
+                <p style="color:var(--text-muted);">La technologie au service de votre portefeuille.</p>
+            </div>
+
+            <div id="reg-box" style="display:none; animation:fadeIn 0.3s;">
+                <input id="reg-name" placeholder="Nom Complet" style="margin-bottom:12px;">
+                <select id="reg-country" style="margin-bottom:12px;">
+                    <option value="">Sélectionner Pays</option>
+                    <optgroup label="Afrique Centrale (XAF)">
+                        <option value="cm">Cameroun (+237)</option>
+                        <option value="ga">Gabon (+241)</option>
+                        <option value="cg">Congo Brazza (+242)</option>
+                        <option value="cd">RDC (+243)</option>
+                        <option value="td">Tchad (+235)</option>
+                        <option value="cf">Centrafrique (+236)</option>
+                        <option value="gq">Guinée Équatoriale (+240)</option>
+                    </optgroup>
+                    <optgroup label="Afrique de l'Ouest (XOF)">
+                        <option value="ci">Côte d'Ivoire (+225)</option>
+                        <option value="sn">Sénégal (+221)</option>
+                        <option value="ml">Mali (+223)</option>
+                        <option value="bf">Burkina Faso (+226)</option>
+                        <option value="bj">Bénin (+229)</option>
+                        <option value="tg">Togo (+228)</option>
+                        <option value="ne">Niger (+227)</option>
+                        <option value="gn">Guinée (+224)</option>
+                        <option value="gw">Guinée-Bissau (+245)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <input id="auth-email" type="email" placeholder="Email" style="margin-bottom:12px;">
+            <input id="auth-pass" type="password" placeholder="Mot de passe" style="margin-bottom:25px;">
+
+            <button class="btn-main" onclick="handleAuth()" id="btn-auth">
+                <span id="btn-txt">Connexion Sécurisée</span> <i class="ph-bold ph-arrow-right"></i>
+            </button>
+            
+            <p style="text-align:center; margin-top:30px; font-weight:700; font-size:0.9rem; cursor:pointer; color:var(--text-muted);" onclick="toggleAuth()">
+                <span id="toggle-txt">Créer un compte IA</span>
+            </p>
+
+            <div style="text-align:center; margin-top:20px;">
+                <button onclick="nav('page-tuto', null)" style="background:transparent; border:none; color:var(--primary); font-weight:800; font-size:0.9rem; text-decoration:underline; cursor:pointer;">
+                    <i class="ph-bold ph-question"></i> Comment ça marche ?
+                </button>
+            </div>
+        </section>
+
+        <div id="app-content" style="display:none;">
+            
+            <div style="padding:25px 25px 5px 25px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Mon Espace</div>
+                    <div id="u-name" style="font-size:1.3rem; font-weight:900; color:var(--text-main);">...</div>
+                </div>
+                <div id="adm-badge" style="display:none; background:var(--accent-grad); color:white; padding:8px 15px; border-radius:12px; font-weight:800; font-size:0.7rem; box-shadow:0 5px 15px rgba(244,63,94,0.3); cursor:pointer;" onclick="nav('page-admin', document.getElementById('nav-adm'))">MODE ADMIN</div>
+            </div>
+
+            <section id="page-home" class="page active">
+                <div style="background: linear-gradient(90deg, #F59E0B, #F43F5E); color: white; padding: 12px; border-radius: 16px; text-align: center; margin-bottom: 20px; box-shadow: 0 10px 20px -5px rgba(245, 158, 11, 0.4); animation: pulse 3s infinite;">
+                    <div style="font-size:0.8rem; font-weight:800;">🎉 DÉJÀ 600,000 PERSONNES CONNECTÉES</div>
+                    <div style="font-size:0.65rem; opacity:0.9;">Rejoignez la révolution financière africaine</div>
+                </div>
+
+                <div class="card" style="background:var(--accent-grad); color:white; text-align:center; padding:35px 20px; border:none; position:relative; overflow:hidden;">
+                    <i class="ph-fill ph-trend-up" style="position:absolute; right:-20px; top:-20px; font-size:8rem; opacity:0.1;"></i>
+                    <div style="font-size:0.85rem; font-weight:600; opacity:0.9;">VALEUR DU PORTEFEUILLE</div>
+                    <div id="u-balance" style="font-size:2.8rem; font-weight:900; margin:10px 0; text-shadow:0 2px 10px rgba(0,0,0,0.1);">0 FCFA</div>
+                    <div id="pending-alert" style="display:none; background:rgba(255,255,255,0.2); backdrop-filter:blur(5px); padding:8px; border-radius:10px; font-size:0.8rem; font-weight:700; margin-top:10px;"><i class="ph-fill ph-hourglass"></i> Dépôt en cours de validation...</div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
+                    <button onclick="openDeposit()" style="background:white; border:none; padding:18px; border-radius:20px; display:flex; align-items:center; gap:10px; box-shadow:0 5px 15px rgba(0,0,0,0.05); font-weight:800; color:var(--primary);">
+                        <div style="background:var(--primary-soft); padding:8px; border-radius:10px;"><i class="ph-bold ph-arrow-down"></i></div> Dépôt
+                    </button>
+                    <button onclick="checkWithdraw()" style="background:white; border:none; padding:18px; border-radius:20px; display:flex; align-items:center; gap:10px; box-shadow:0 5px 15px rgba(0,0,0,0.05); font-weight:800; color:var(--text-main);">
+                        <div style="background:#F1F5F9; padding:8px; border-radius:10px;"><i class="ph-bold ph-arrow-up"></i></div> Retrait
+                    </button>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h3 style="font-size:0.9rem; font-weight:800; margin:0 0 10px 10px; color:var(--primary);">💸 Retraits en Direct</h3>
+                    <div id="live-withdrawals" style="max-height:120px; overflow:hidden; position:relative;"></div>
+                </div>
+
+                <div style="padding:0 10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="font-size:1rem; font-weight:800; margin:0;">Mon Historique</h3>
+                </div>
+                <div id="history-list" style="padding-bottom:20px;"></div>
+            </section>
+
+            <section id="page-invest" class="page">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <h2 style="font-weight:900;">Marketplace IA</h2>
+                    <p style="color:var(--text-muted); font-size:0.85rem;">Choisissez votre stratégie</p>
+                </div>
+                
+                <div style="margin-bottom:30px;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-left:5px;">
+                        <i class="ph-fill ph-lightning" style="color:#8B5CF6;"></i> <b style="color:#1E293B;">BOTS FLASH</b>
+                    </div>
+                    <div class="plans-container" id="grid-flash"></div>
+                </div>
+                <div style="margin-bottom:30px;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-left:5px;">
+                        <i class="ph-fill ph-chart-bar" style="color:#2563EB;"></i> <b style="color:#1E293B;">STRATÉGIES HEBDO</b>
+                    </div>
+                    <div class="plans-container" id="grid-hebdo"></div>
+                </div>
+                <div style="margin-bottom:30px;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; padding-left:5px;">
+                        <i class="ph-fill ph-crown" style="color:#F59E0B;"></i> <b style="color:#1E293B;">LONG TERME</b>
+                    </div>
+                    <div class="plans-container" id="grid-mensuel"></div>
+                </div>
+            </section>
+
+            <section id="page-profile" class="page">
+                <div class="card" style="text-align:center; padding:30px 20px;">
+                    <div style="width:90px; height:90px; background:var(--primary-soft); border-radius:50%; margin:0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:900; color:var(--primary);" id="p-avatar"></div>
+                    <h2 id="p-name" style="margin-bottom:5px;">...</h2>
+                    <p id="p-email" style="color:var(--text-muted); font-size:0.9rem;">...</p>
+                    <div style="margin-top:15px; font-weight:700; font-size:0.8rem; background:#F1F5F9; padding:5px 15px; border-radius:20px; display:inline-block;">Pays : <span id="p-country" style="color:var(--primary);">...</span></div>
+                </div>
+
+                <h3 style="margin:20px 0 15px 0; font-size:1rem;">Centre d'Aide</h3>
+                <button class="yt-btn" onclick="nav('page-tuto', null)">
+                    <i class="ph-fill ph-book-open" style="color:var(--primary);"></i>
+                    <div>
+                        <div>Guide d'utilisation</div>
+                        <small style="color:var(--text-muted); font-weight:500;">Comment recharger et gagner ?</small>
+                    </div>
+                </button>
+                <button class="yt-btn" onclick="window.open('https://wa.me/YOUR_NUM', '_blank')">
+                    <i class="ph-fill ph-whatsapp-logo" style="color:#25D366;"></i>
+                    <div>
+                        <div>Support Client</div>
+                        <small style="color:var(--text-muted); font-weight:500;">Assistance directe</small>
+                    </div>
+                </button>
+                <button class="yt-btn" onclick="window.open('https://youtube.com/@VOTRE_CHAINE', '_blank')">
+    <i class="ph-fill ph-youtube-logo" style="color: #FF0000;"></i>
+    <div>
+        <div>Suivez-nous sur YouTube</div>
+        <small style="color:var(--text-muted); font-weight:500;">Directs et Analyses IA</small>
+    </div>
+</button>
+
+                <button class="btn-main" style="background:#EF4444; margin-top:20px;" onclick="logout()">Déconnexion</button>
+            </section>
+
+            <section id="page-admin" class="page">
+                <h2 style="text-align:center; margin-bottom:20px;">Console Admin</h2>
+                <div class="card">
+                    <h4 style="color:var(--primary);">Base Utilisateurs</h4>
+                    <div style="max-height:250px; overflow-y:auto; margin-top:15px;" id="adm-users-list"><small>Chargement...</small></div>
+                </div>
+                <div class="card">
+                    <h4 style="color:var(--accent);">⚙️ Paiements</h4>
+                    <select id="adm-country-sel" onchange="loadCountryConfig()" style="margin-bottom:10px;"><option value="cm">Cameroun</option><option value="ci">Côte d'Ivoire</option><option value="sn">Sénégal</option><option value="bf">Burkina</option><option value="ml">Mali</option><option value="ga">Gabon</option><option value="tg">Togo</option><option value="bj">Bénin</option><option value="cd">RDC</option><option value="cg">Congo</option><option value="ne">Niger</option><option value="cf">Centrafrique</option><option value="gq">Guinée Eq.</option><option value="gn">Guinée</option><option value="gw">Guinée Bissau</option></select>
+                    <div style="background:#F8FAFC; padding:10px; border-radius:10px; margin-bottom:8px;"><input id="conf-n1" placeholder="Opérateur 1"><input id="conf-num1" placeholder="Numéro 1"></div>
+                    <div style="background:#F8FAFC; padding:10px; border-radius:10px; margin-bottom:8px;"><input id="conf-n2" placeholder="Opérateur 2"><input id="conf-num2" placeholder="Numéro 2"></div>
+                    <input id="conf-rate" type="number" placeholder="Taux (1)" style="margin-bottom:10px;">
+                    <button class="btn-main" style="padding:12px;" onclick="saveCountryConfig()">Sauvegarder</button>
+                </div>
+                <div class="card">
+                    <h4 style="color:#10B981;">📥 Dépôts en attente</h4>
+                    <div id="admin-deposits-list"></div>
+                </div>
+                <div class="card">
+                    <h4 style="color:#F59E0B;">📦 Créer Robot IA</h4>
+                    <input id="new-p-name" placeholder="Nom du Bot" style="margin-bottom:8px;">
+                    <div style="display:flex; gap:10px; margin-bottom:8px;"><input id="new-p-price" type="number" placeholder="Prix"><input id="new-p-gain" type="number" placeholder="Gain Total"></div>
+                    <select id="new-p-cat" style="margin-bottom:12px;"><option value="flash">Flash (Violet)</option><option value="hebdo">Hebdo (Bleu)</option><option value="mensuel">Mensuel (Or)</option></select>
+                    <button class="btn-main" onclick="createPlan()">Lancer le Bot</button>
+                    <div id="adm-plans-list" style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;"></div>
+                </div>
+            </section>
+
+            <nav id="main-navbar" class="navbar">
+                <i class="ph-fill ph-house nav-icon active" onclick="nav('page-home', this)"></i>
+                <i class="ph-fill ph-chart-pie-slice nav-icon" onclick="nav('page-invest', this)"></i>
+                <i class="ph-fill ph-user-circle nav-icon" onclick="nav('page-profile', this)"></i>
+                <i id="nav-adm" class="ph-fill ph-shield-check nav-icon" style="display:none;" onclick="nav('page-admin', this)"></i>
+            </nav>
+        </div>
+
+        <section id="page-tuto" class="page" style="padding-bottom:30px; background:white;">
+            <div style="text-align:center; padding:20px 0;">
+                <div style="width:60px; height:60px; background:var(--primary-soft); color:var(--primary); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:2rem; margin:0 auto 15px;">
+                    <i class="ph-fill ph-book-bookmark"></i>
+                </div>
+                <h2 style="font-weight:900; margin:0; font-size:1.5rem;">Comment ça marche ?</h2>
+                <p style="color:var(--text-muted);">Guide de démarrage rapide</p>
+            </div>
+
+            <div style="padding:0 10px;">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <h4>Faire un Rechargement</h4>
+                        <p>Allez sur l'accueil et cliquez sur le bouton <b style="color:var(--primary);">Dépôt</b>.</p>
+                        <p style="margin-top:5px;">Copiez le numéro affiché (Orange ou MTN), faites le transfert, et faites une capture d'écran du SMS de confirmation. Envoyez cette capture dans le formulaire.</p>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <h4>Activer une IA</h4>
+                        <p>Une fois votre solde crédité, allez dans le menu <b>Marketplace</b> (au milieu).</p>
+                        <p style="margin-top:5px;">Choisissez un robot (Flash, Hebdo ou Mensuel). Cliquez dessus pour l'activer. Les gains commenceront à tomber chaque jour !</p>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <h4>Retirer ses gains</h4>
+                        <p>Quand votre robot a terminé son cycle, votre solde augmente.</p>
+                        <p style="margin-top:5px;">Cliquez sur <b>Retrait</b> sur l'accueil pour récupérer votre argent vers votre mobile money.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:30px; padding:0 10px;">
+                <button class="btn-main" onclick="backFromTuto()" style="margin-bottom:15px; background:var(--text-main);">
+                    <i class="ph-bold ph-arrow-u-up-left"></i> REVENIR AU SITE
+                </button>
+                
+                <button class="btn-main" onclick="window.open('https://wa.me/YOUR_NUM', '_blank')" style="background:#25D366; color:white;">
+                    <i class="ph-fill ph-whatsapp-logo"></i> ASSISTANCE SUR WHATSAPP
+                </button>
+            </div>
+        </section>
+
+
+        <div id="modal-deposit" style="position:fixed; inset:0; background:rgba(30,41,59,0.9); backdrop-filter:blur(5px); z-index:2000; display:none; align-items:flex-end;">
+            <div style="background:white; width:100%; border-radius:30px 30px 0 0; padding:25px; padding-bottom:40px; animation:slideUp 0.3s;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                    <h3>Recharger Solde</h3>
+                    <div onclick="document.getElementById('modal-deposit').style.display='none'" style="background:#F1F5F9; padding:8px; border-radius:50%; cursor:pointer;"><i class="ph-bold ph-x"></i></div>
+                </div>
+                <div id="pay-methods-container"></div>
+                <input id="dep-amt" type="number" placeholder="Montant (FCFA)" style="margin-top:15px; margin-bottom:10px;">
+                <input type="file" id="dep-file" hidden accept="image/*" onchange="fileSelected()">
+                <button id="lbl-file" class="btn-main" style="background:#F1F5F9; color:var(--text-main); margin-bottom:15px; box-shadow:none;" onclick="document.getElementById('dep-file').click()">
+                    <i class="ph-bold ph-camera"></i> Preuve de paiement
+                </button>
+                <button class="btn-main" onclick="submitDeposit()" id="btn-submit-dep">Valider le Rechargement</button>
+            </div>
+        </div>
+
+        <div id="modal-img" style="position:fixed; inset:0; background:black; z-index:3000; display:none; flex-direction:column; justify-content:center; padding:10px;">
+            <img id="modal-img-src" src="" style="width:100%; max-height:80vh; object-fit:contain; border-radius:10px;">
+            <button onclick="document.getElementById('modal-img').style.display='none'" style="background:white; border:none; padding:15px; width:100%; margin-top:20px; border-radius:15px; font-weight:900;">FERMER</button>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, where, increment, orderBy, writeBatch, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBjy_IMjM7tgZa6ta7ZivgnQ0zm6rZJilA",
+            authDomain: "datacash-6dfb0.firebaseapp.com",
+            projectId: "datacash-6dfb0",
+            storageBucket: "datacash-6dfb0.appspot.com",
+            messagingSenderId: "922083654481",
+            appId: "1:922083654481:web:2d9b7cc3922a0bec58b170"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let uRate = 1; let uCountry = "cm"; let uTransactions = []; let isUserLoggedIn = false;
+
+        // --- AUTH ---
+        window.handleAuth = async () => {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const isReg = document.getElementById('reg-box').style.display === 'block';
+
+            if(!email || pass.length < 6) return Swal.fire("Erreur", "Identifiants invalides", "error");
+            document.getElementById('loader').style.display = 'flex';
+
+            try {
+                if(isReg) {
+                    const name = document.getElementById('reg-name').value;
+                    const country = document.getElementById('reg-country').value;
+                    if(!name || !country) throw new Error("Nom et Pays requis");
+
+                    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                    await setDoc(doc(db, "users", cred.user.uid), {
+                        name, email, country, balance: 0, role: 'user', createdAt: new Date().toISOString()
+                    });
+                } else {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                }
+            } catch(e) {
+                document.getElementById('loader').style.display = 'none';
+                Swal.fire("Attention", e.message, "warning");
+            }
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if(user) {
+                isUserLoggedIn = true;
+                const s = await getDoc(doc(db, "users", user.uid));
+                if(s.exists()) {
+                    const d = s.data();
+                    uCountry = d.country || "cm";
+                    document.getElementById('u-name').innerText = d.name;
+                    document.getElementById('p-name').innerText = d.name;
+                    document.getElementById('p-email').innerText = d.email;
+                    document.getElementById('p-country').innerText = uCountry.toUpperCase();
+                    document.getElementById('p-avatar').innerText = d.name.charAt(0);
+
+                    if(d.role === 'admin') {
+                        document.getElementById('adm-badge').style.display = 'block';
+                        document.getElementById('nav-adm').style.display = 'block';
+                        initAdmin();
+                    }
+
+                    onSnapshot(doc(db, "users", user.uid), (snap) => {
+                        const bal = Math.floor(snap.data().balance * uRate);
+                        document.getElementById('u-balance').innerText = bal.toLocaleString() + " FCFA";
+                    });
+
+                    onSnapshot(doc(db, "settings", `pay_${uCountry}`), (snap) => {
+                        if(snap.exists()) uRate = snap.data().rate || 1;
+                    });
+
+                    loadPlans();
+                    loadHistory(user.uid);
+                    startFakeWithdrawals();
+                    document.getElementById('auth-screen').style.display = 'none';
+                    // Si on était pas sur la page Tuto, on affiche l'app
+                    if(!document.getElementById('page-tuto').classList.contains('active')){
+                         document.getElementById('app-content').style.display = 'block';
+                    }
+                    document.getElementById('loader').style.display = 'none';
+                }
+            } else {
+                isUserLoggedIn = false;
+            }
+        });
+
+        // --- HISTORY ---
+        function loadHistory(uid) {
+            onSnapshot(query(collection(db, "transactions"), where("userId", "==", uid), orderBy("date", "desc")), (snap) => {
+                const list = document.getElementById('history-list');
+                const alert = document.getElementById('pending-alert');
+                list.innerHTML = '';
+                uTransactions = [];
+                let hasPending = false;
+
+                if(snap.empty) list.innerHTML = '<div style="text-align:center; padding:20px; color:#94A3B8;">Aucune transaction récente</div>';
+
+                snap.forEach(d => {
+                    const t = d.data();
+                    uTransactions.push(t);
+                    if(t.type === 'depot' && t.status === 'pending') hasPending = true;
+
+                    const isDep = t.type === 'depot';
+                    let icon = isDep ? 'ph-arrow-down-left' : 'ph-rocket-launch';
+                    let color = '#2563EB';
+                    if(isDep) {
+                        if(t.status === 'approved') color = '#10B981';
+                        else if(t.status === 'pending') color = '#F59E0B';
+                        else color = '#EF4444';
+                    }
+                    let label = t.plan || 'Rechargement';
+                    if(isDep && t.status === 'pending') label += ' (En attente)';
+                    if(isDep && t.status === 'rejected') label += ' (Refusé)';
+
+                    list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:white; border-radius:16px; margin-bottom:10px; border:1px solid #F1F5F9;"><div style="display:flex; align-items:center; gap:12px;"><div style="background:${color}15; color:${color}; padding:10px; border-radius:12px;"><i class="ph-bold ${icon}"></i></div><div><div style="font-weight:700; font-size:0.9rem;">${label}</div><div style="font-size:0.7rem; color:var(--text-muted);">${new Date(t.date).toLocaleDateString()}</div></div></div><div style="font-weight:800; color:${color};">${isDep?'+':'-'}${t.dispAmt}</div></div>`;
+                });
+                alert.style.display = hasPending ? 'block' : 'none';
+            });
+        }
+
+        // --- FAKE NOTIFS ---
+        function startFakeWithdrawals() {
+            const names = ["Jean K.", "Moussa D.", "Sophie T.", "Ibrahim S.", "Fatou D.", "Landry P.", "Grace M.", "Junior B."];
+            const container = document.getElementById('live-withdrawals');
+            function addNotif() {
+                const name = names[Math.floor(Math.random() * names.length)];
+                const amt = (Math.floor(Math.random() * 50) + 10) * 500;
+                const div = document.createElement('div');
+                div.className = 'fake-notif-item';
+                div.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><i class="ph-fill ph-check-circle" style="color:#10B981;"></i><b>${name}</b></div><span style="color:#10B981; font-weight:800;">+${amt.toLocaleString()} FCFA</span>`;
+                container.prepend(div);
+                if(container.children.length > 3) container.lastChild.remove();
+            }
+            setInterval(addNotif, 4500); addNotif();
+        }
+
+        // --- PLANS ---
+        function loadPlans() {
+            onSnapshot(collection(db, "plans"), (snap) => {
+                const containers = { flash: document.getElementById('grid-flash'), hebdo: document.getElementById('grid-hebdo'), mensuel: document.getElementById('grid-mensuel') };
+                Object.values(containers).forEach(e => e.innerHTML = '');
+
+                snap.forEach(d => {
+                    const p = d.data();
+                    const dp = Math.floor(p.price * uRate);
+                    const gainTotal = Math.floor(p.gain * uRate);
+                    const days = p.category === 'flash' ? 1 : (p.category === 'hebdo' ? 7 : 30);
+                    const daily = Math.floor(gainTotal / days);
+
+                    let badge = "IA STANDARD"; let tech = "Analyse de Tendance";
+                    let cardStyle = "background: white; border:1px solid #E2E8F0;";
+                    let limitHtml = "";
+
+                    if(p.category === 'flash') { 
+                        badge = "HAUTE FRÉQUENCE"; tech = "Scalping Volatilité";
+                        cardStyle = "background: linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%); border: 1px solid #C084FC;"; 
+                        limitHtml = `<div style="position:absolute; top:-8px; right:10px; background:#EF4444; color:white; font-size:0.55rem; font-weight:800; padding:4px 8px; border-radius:10px; box-shadow:0 4px 10px rgba(239,68,68,0.3);">LIMITE : 1 / MOIS</div>`;
+                    }
+                    if(p.category === 'hebdo') { 
+                        badge = "SWING TRADING"; tech = "Suivi de Tendance";
+                        cardStyle = "background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #60A5FA;"; 
+                    }
+                    if(p.category === 'mensuel') { 
+                        badge = "HOLDING IA"; tech = "Arbitrage Long Terme";
+                        cardStyle = "background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1px solid #FBBF24;"; 
+                    }
+
+                    containers[p.category].innerHTML += `<div class="plan-card" style="${cardStyle}" onclick="buyPlan('${p.name}', ${p.price}, ${dp}, '${p.category}')">${limitHtml}<div class="ai-badge">${badge}</div><h4 style="margin:0; font-weight:800;">${p.name}</h4><div class="tech-text">${tech}</div><h2 style="margin:10px 0; font-size:1.4rem; color:var(--text-main);">${dp.toLocaleString()}</h2><small style="color:var(--text-muted); font-size:0.7rem;">Investissement (FCFA)</small><div class="gain-box"><div style="font-size:0.75rem; font-weight:800;">${daily.toLocaleString()} FCFA / JOUR</div><div style="font-size:0.65rem; opacity:0.8; margin-top:2px;">Total: ${gainTotal.toLocaleString()} FCFA</div></div></div>`;
+                });
+            });
+        }
+
+        window.buyPlan = async (name, baseP, dispP, cat) => {
+            const uRef = doc(db, "users", auth.currentUser.uid);
+            const uSnap = await getDoc(uRef);
+            if(uSnap.data().balance < baseP) return Swal.fire("Solde insuffisant", "Veuillez recharger votre compte.", "warning");
+
+            if(cat === 'flash') {
+                const now = new Date();
+                const hasFlash = uTransactions.find(t => {
+                    const tDate = new Date(t.date);
+                    return t.category === 'flash' && t.type === 'activation' && tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
+                });
+                if(hasFlash) return Swal.fire({icon: 'error', title: 'Limite Atteinte', text: 'Le Bot Flash est limité à une activation par mois.'});
+            }
+
+            Swal.fire({title: 'Lancer le Bot ?', text: `${name} : ${dispP} FCFA seront investis.`, icon: 'question', showCancelButton: true, confirmButtonText: 'Lancer l\'IA', confirmButtonColor: '#2563EB'}).then(async (res) => {
+                if(res.isConfirmed) {
+                    await updateDoc(uRef, { balance: increment(-baseP) });
+                    await addDoc(collection(db, "transactions"), {
+                        userId: auth.currentUser.uid, plan: name, category: cat, amtBase: baseP, dispAmt: dispP + " FCFA",
+                        type: 'activation', status: 'approved', date: new Date().toISOString()
+                    });
+                    Swal.fire({toast:true, position:'top', icon:'success', title:'Bot Activé avec succès !', showConfirmButton:false, timer:3000});
+                }
+            });
+        };
+
+        // --- DEPOSIT ---
+        window.openDeposit = async () => {
+            const c = document.getElementById('pay-methods-container');
+            c.innerHTML = '<div style="text-align:center; padding:20px;">Chargement...</div>';
+            document.getElementById('modal-deposit').style.display = 'flex';
+            const s = await getDoc(doc(db, "settings", `pay_${uCountry}`));
+            c.innerHTML = '';
+            if(s.exists()) {
+                const d = s.data();
+                if(d.n1 && d.num1) c.innerHTML += `<div style="background:#EFF6FF; padding:15px; border-radius:15px; border:1px dashed #2563EB; margin-bottom:10px; text-align:center;"><div style="font-weight:800; color:#2563EB;">${d.n1}</div><div style="font-size:1.4rem; font-weight:900;">${d.num1}</div></div>`;
+                if(d.n2 && d.num2) c.innerHTML += `<div style="background:#FFF1F2; padding:15px; border-radius:15px; border:1px dashed #F43F5E; margin-bottom:10px; text-align:center;"><div style="font-weight:800; color:#F43F5E;">${d.n2}</div><div style="font-size:1.4rem; font-weight:900;">${d.num2}</div></div>`;
+                if(c.innerHTML === '') c.innerHTML = '<p style="text-align:center; color:red;">Aucun moyen de paiement disponible.</p>';
+            }
+        };
+
+        window.submitDeposit = () => {
+            const amt = document.getElementById('dep-amt').value;
+            const file = document.getElementById('dep-file').files[0];
+            if(!amt || !file) return Swal.fire("Erreur", "Veuillez entrer le montant et la preuve.", "warning");
+            const btn = document.getElementById('btn-submit-dep'); btn.innerText = 'Traitement en cours...'; btn.disabled = true;
+
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                const img = new Image(); img.src = e.target.result;
+                img.onload = async () => {
+                    const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d');
+                    const MAX = 800; let w=img.width, h=img.height;
+                    if(w>h){if(w>MAX){h*=MAX/w;w=MAX}}else{if(h>MAX){w*=MAX/h;h=MAX}}
+                    cvs.width=w; cvs.height=h; ctx.drawImage(img,0,0,w,h);
+
+                    await addDoc(collection(db, "transactions"), {
+                        userId: auth.currentUser.uid, userName: document.getElementById('u-name').innerText,
+                        amtBase: Number(amt)/uRate, dispAmt: amt+" FCFA", proof: cvs.toDataURL('image/jpeg', 0.6),
+                        status: 'pending', type: 'depot', date: new Date().toISOString()
+                    });
+                    document.getElementById('modal-deposit').style.display = 'none';
+                    Swal.fire("Envoyé", "Votre rechargement sera validé sous peu.", "success");
+                    btn.innerText = 'Valider le Rechargement'; btn.disabled = false;
+                }
+            }
+        };
+
+        window.fileSelected = () => {
+            const l = document.getElementById('lbl-file');
+            if(document.getElementById('dep-file').files.length) { l.innerHTML = '✅ Photo Ajoutée'; l.style.background='#DCFCE7'; l.style.color='#166534'; }
+        };
+
+        // --- ADMIN ---
+        window.initAdmin = () => {
+            onSnapshot(collection(db, "users"), (snap) => {
+                const list = document.getElementById('adm-users-list'); list.innerHTML = '';
+                snap.forEach(d => {
+                    const u = d.data();
+                    list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;"><div><div style="font-weight:700; font-size:0.85rem;">${u.name}</div><div style="font-size:0.7rem; color:var(--text-muted);">${u.email} (${(u.country||'').toUpperCase()})</div></div><div style="font-weight:800; color:var(--primary); font-size:0.9rem;">${Math.floor(u.balance).toLocaleString()} Pts</div></div>`;
+                });
+            });
+            onSnapshot(query(collection(db, "transactions"), where("status", "==", "pending")), (snap) => {
+                const div = document.getElementById('admin-deposits-list'); div.innerHTML = '';
+                snap.forEach(d => {
+                    const t = d.data();
+                    div.innerHTML += `<div style="padding:15px; border:1px solid #eee; border-radius:15px; margin-bottom:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><b>${t.userName}</b> <span style="color:var(--primary); font-weight:800;">${t.dispAmt}</span></div><img src="${t.proof}" style="width:50px; height:50px; border-radius:8px; object-fit:cover; cursor:pointer; border:1px solid #ddd;" onclick="document.getElementById('modal-img-src').src='${t.proof}';document.getElementById('modal-img').style.display='flex'"><div style="margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px;"><button class="btn-main" style="padding:8px; font-size:0.8rem; background:#10B981;" onclick="admDecide('${d.id}',true,'${t.userId}',${t.amtBase})">OK</button><button class="btn-main" style="padding:8px; font-size:0.8rem; background:#EF4444;" onclick="admDecide('${d.id}',false)">NON</button></div></div>`;
+                });
+            });
+            onSnapshot(collection(db, "plans"), (snap) => {
+                const d = document.getElementById('adm-plans-list'); d.innerHTML = '';
+                snap.forEach(x => d.innerHTML += `<div style="display:flex; justify-content:space-between; padding:5px;"><span>${x.data().name}</span><span style="cursor:pointer;" onclick="deletePlan('${x.id}')">🗑️</span></div>`);
+            });
+            loadCountryConfig();
+        };
+
+        window.admDecide = async (tid, ok, uid, amt) => {
+            const batch = writeBatch(db);
+            batch.update(doc(db, "transactions", tid), { status: ok ? 'approved' : 'rejected' });
+            if(ok) batch.update(doc(db, "users", uid), { balance: increment(amt) });
+            await batch.commit();
+        };
+
+        window.saveCountryConfig = async () => {
+            const c = document.getElementById('adm-country-sel').value;
+            await setDoc(doc(db, "settings", `pay_${c}`), {
+                n1: document.getElementById('conf-n1').value, num1: document.getElementById('conf-num1').value,
+                n2: document.getElementById('conf-n2').value, num2: document.getElementById('conf-num2').value,
+                rate: Number(document.getElementById('conf-rate').value)
+            });
+            Swal.fire("Sauvegardé", "", "success");
+        };
+
+        window.loadCountryConfig = async () => {
+            const c = document.getElementById('adm-country-sel').value;
+            const s = await getDoc(doc(db, "settings", `pay_${c}`));
+            if(s.exists()) {
+                const d = s.data();
+                document.getElementById('conf-n1').value = d.n1||''; document.getElementById('conf-num1').value = d.num1||'';
+                document.getElementById('conf-n2').value = d.n2||''; document.getElementById('conf-num2').value = d.num2||'';
+                document.getElementById('conf-rate').value = d.rate||1;
+            } else {
+                ['conf-n1','conf-num1','conf-n2','conf-num2'].forEach(i => document.getElementById(i).value='');
+                document.getElementById('conf-rate').value = 1;
+            }
+        };
+
+        window.createPlan = async () => {
+            const n = document.getElementById('new-p-name').value;
+            const p = Number(document.getElementById('new-p-price').value);
+            const g = Number(document.getElementById('new-p-gain').value);
+            const c = document.getElementById('new-p-cat').value;
+            if(n && p && g) await addDoc(collection(db, "plans"), { name: n, price: p, gain: g, category: c });
+        };
+        window.deletePlan = async(id) => { if(confirm("Supprimer ?")) await deleteDoc(doc(db, "plans", id)); };
+
+        // --- UTILS & NAV ---
+        window.nav = (id, el) => {
+            // Masquer les autres pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Afficher la page cible
+            document.getElementById(id).classList.add('active');
+            
+            // Gestion de la barre de navigation du bas
+            if(id === 'page-tuto') {
+                // Si on est sur le tuto, on cache le menu du bas pour plus de focus
+                document.getElementById('main-navbar').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'none'; // Si accès depuis login
+                document.getElementById('app-content').style.display = 'block'; // Container principal doit être visible
+            } else {
+                document.getElementById('main-navbar').style.display = 'flex';
+                document.querySelectorAll('.nav-icon').forEach(n => n.classList.remove('active'));
+                if(el) el.classList.add('active');
+            }
+        };
+
+        window.backFromTuto = () => {
+            if(isUserLoggedIn) {
+                // Retour à la maison
+                nav('page-home', document.querySelector('.ph-house'));
+            } else {
+                // Retour à l'écran de connexion
+                document.getElementById('app-content').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'flex';
+            }
+        };
+
+        window.toggleAuth = () => {
+            const b = document.getElementById('reg-box'); const isR = b.style.display==='block';
+            b.style.display = isR ? 'none' : 'block';
+            document.getElementById('toggle-txt').innerHTML = isR ? 'Créer un compte IA' : 'Déjà membre ? Connexion';
+            document.getElementById('btn-txt').innerText = isR ? 'Connexion Sécurisée' : 'Démarrer l\'inscription';
+        };
+        window.logout = () => { signOut(auth); location.reload(); };
+        window.checkWithdraw = () => Swal.fire("Retrait", "Le seuil minimal est de 5,000 FCFA.", "info");
+
+    </script>
+</body>
+</html>
