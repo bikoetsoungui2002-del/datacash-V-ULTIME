@@ -660,21 +660,75 @@
             });
         }
 
-        // --- FAKE NOTIFS ---
-        function startFakeWithdrawals() {
-            const names = ["Jean K.", "Moussa D.", "Sophie T.", "Ibrahim S.", "Fatou D.", "Landry P.", "Grace M.", "Junior B."];
-            const container = document.getElementById('live-withdrawals');
-            function addNotif() {
-                const name = names[Math.floor(Math.random() * names.length)];
-                const amt = (Math.floor(Math.random() * 50) + 10) * 500;
-                const div = document.createElement('div');
-                div.className = 'fake-notif-item';
-                div.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><i class="ph-fill ph-check-circle" style="color:#10B981;"></i><b>${name}</b></div><span style="color:#10B981; font-weight:800;">+${amt.toLocaleString()} FCFA</span>`;
-                container.prepend(div);
-                if(container.children.length > 3) container.lastChild.remove();
-            }
-            setInterval(addNotif, 4500); addNotif();
+function startFakeWithdrawals() {
+    const names = [
+        "Mamadou Diop", "Aïcha Koné", "Koffi Mensah", "Aminata Traoré", "Amadou Diallo", "Fatou Sow", "Jean-Pierre Kouamé", "Mariam Coulibaly", "Ousmane Keita", "Grace Bamba",
+        "Samuel Zongo", "Nathalie Abena", "Ibrahim Bah", "Sékou Condé", "Modibo Sidibé", "Yao Brou", "Kadidia Sylla", "Bakary Sangaré", "Amenan Kouamé", "Djibril Fall",
+        "Félicité Mba", "Rodrigue Fotso", "Assiatou Diop", "Tidiane Thiam", "Bintu Mansaray", "Gnamien Konan", "Ramatoulaye Faye", "Issa Diakité", "Prisca Ngoma", "Serge Beynaud",
+        "Adama Barrow", "Khady Ndiaye", "Tunde Adeniyi", "Chidi Okechukwu", "Kwesi Appiah", "Malik Bongo", "Sandrine Atangana", "Arame Fall", "Landry Ngando", "Josiane Makosso",
+        "Boubacar Kamara", "Salimata Dosso", "Mireille Enoh", "Abdoulaye Bamba", "Bintou Sarr", "Cheick Tiété", "Daba Diawara", "Ekow Mensah", "Fanta Sangaré", "Gallo Sylla",
+        "Habibatou Gadiaga", "Idrissa Gueye", "Juma Masaba", "Lamine Diack", "Moussa Konaté", "Ndeye Fatou", "Oumar Niasse", "Quattara Lassina", "Rose Mutola", "Thierno Ballo",
+        "Valery Mezague", "Xavier Mbemba", "Abiba Sidibé", "Cédric Kanté", "Doudou Ndiaye", "Evelyne Mpoudi", "Fousseyni Diawara", "Gora Dieye", "Hawa Sow", "Ismaël Bangoura",
+        "Lassana Diarra", "Moustapha Bayal", "Nicolas Nkoulou", "Ousmane Viera", "Serey Dié", "Taye Taiwo", "Umar Sadiq", "Wilfried Zaha", "Xola Mlambo", "Zambo Anguissa",
+        "Barthélémy Ouédraogo", "Clémentine Kaboré", "Désiré Mounkaila", "Esther Tchanile", "Firmin Sanou", "Gisèle Gbagbo", "Hervé Koffi", "Inès Niang", "Jules Koundé", "Kader Keita",
+        "Léopold Sédar", "Martine Aubameyang", "Noël Kasongo", "Olga Mpoudi", "Pascal Feindouno", "Quentin Yao", "Raïssa Mambé", "Sylvain Gbohouo", "Thérèse Nguesso", "Ursule Biya",
+        "Victorine Agassa", "William Atangana", "Xavier Mendy", "Yasmine Fofana", "Zénabou Touré", "Alphonse Titi", "Bernadette Koma", "Charles Nguimba", "Dorothée Eboki", "Emmanuel Esso",
+        "Florentin Pogba", "Germaine Ahidjo", "Hubert Maga", "Irène Gado", "Joachim Chissano", "Kadiatou Holm", "Lazare Tarpaga", "Mathieu Kérékou", "Norbert Zongo", "Oswald Gomis",
+        "Patrice Talon", "Quintin Quenum", "René Soglo", "Sébastien Ajavon", "Thomas Boni", "Urbain Amoussou", "Valentin Aditi", "Walter Benno", "Xaverie Loko", "Yvon Abiola",
+        "Zacharie Goudjo", "Alain Giresse", "Blaise Compaoré", "Chantal Diallo", "Denis Sassou", "Edgard Lungu", "François Bozizé", "Guy Nzouba", "Hery Rajaon", "Idriss Déby",
+        "Justin Koutou", "Kgalema Motlante", "Levi Mwanawasa", "Marc Ravalo", "Noureddine Bedoui", "Ondimba Ali", "Paul Kaba", "Roch Marc", "Sidi Mohamed", "Teodoro Obiang",
+        "Umaru Yar", "Vasco Goncal", "Winnie Madiki", "Xavier Luc", "Yahya Jammeh", "Zine Abidine", "Abdelaziz Boutef", "Béji Caïd", "Cyril Ramaph", "Daniel Arap", "Elias Hrawi",
+        "Faure Gnassing", "Goodluck Jonath", "Hassan Sheikh", "Isaias Afwerki", "Joyce Banda", "King Mswati", "Lazarus Chakwera", "Macky Sall", "Nana Akufo", "Oginga Odinga",
+        "Paul Biya", "Quett Masire", "Robert Mugabe", "Sam Nujoma", "Thabo Mbeki", "Uhuru Kenyatta", "Vernon Mwaanga", "Wole Soyinka", "Xavier Bettel", "Yoweri Museveni", "Zera Yacob"
+    ];
+
+    const container = document.getElementById('live-withdrawals');
+
+    function addNotif() {
+        const name = names[Math.floor(Math.random() * names.length)];
+        let amt;
+
+        // Logique de répartition demandée
+        const r = Math.random(); // Génère un nombre entre 0 et 1
+
+        if (r < 0.20) { 
+            // 1 sur 5 (20%) : Supérieur à 100 000 (jusqu'à 1 000 000)
+            amt = Math.floor(Math.random() * (1000000 - 100001) + 100001);
+        } 
+        else if (r < 0.80) { 
+            // 3 sur 5 (60%) : Entre 30 000 et 99 000
+            amt = Math.floor(Math.random() * (99000 - 30000) + 30000);
+        } 
+        else { 
+            // Le reste (20%) : Entre 15 000 et 30 000
+            amt = Math.floor(Math.random() * (30000 - 15000) + 15000);
         }
+
+        // Arrondi à la centaine pour faire plus vrai (ex: 45 200 au lieu de 45 237)
+        amt = Math.round(amt / 100) * 100;
+
+        const div = document.createElement('div');
+        div.className = 'fake-notif-item';
+        div.innerHTML = `
+            <div style="display:flex; gap:10px; align-items:center;">
+                <i class="ph-fill ph-check-circle" style="color:#10B981;"></i>
+                <b>${name}</b>
+            </div>
+            <span style="color:#10B981; font-weight:800;">+${amt.toLocaleString()} FCFA</span>
+        `;
+
+        container.prepend(div);
+
+        // Garder seulement les 3 dernières notifications
+        if (container.children.length > 3) {
+            container.lastChild.remove();
+        }
+    }
+
+    // Intervalle de 4.5 secondes
+    setInterval(addNotif, 4500); 
+    addNotif(); // Première exécution immédiate
+}
 
         // --- PLANS ---
         function loadPlans() {
