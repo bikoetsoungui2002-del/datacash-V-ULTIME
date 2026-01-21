@@ -710,36 +710,64 @@
                     containers[p.category].innerHTML += `<div class="plan-card" style="${cardStyle}" onclick="showPlanDetails('${p.name}', ${p.price}, ${dp}, '${p.category}', ${daily}, ${gainTotal})">${limitHtml}<div class="ai-badge">${badge}</div><h4 style="margin:0; font-weight:800;">${p.name}</h4><div class="tech-text">${tech}</div><h2 style="margin:10px 0; font-size:1.4rem; color:var(--text-main);">${dp.toLocaleString()}</h2><small style="color:var(--text-muted); font-size:0.7rem;">Investissement (FCFA)</small><div class="gain-box"><div style="font-size:0.75rem; font-weight:800;">${daily.toLocaleString()} FCFA / JOUR</div><div style="font-size:0.65rem; opacity:0.8; margin-top:2px;">Total: ${gainTotal.toLocaleString()} FCFA</div></div></div>`;                });
             });
         }
-window.buyPlan = async (name, basePrice, dispPrice, category) => {
-    if (!userData) return;
-    if (userData.balance < dispPrice) {
-        return Swal.fire("Solde insuffisant", "Veuillez recharger votre compte.", "error");
-    }
-
+window.buyPlan = async (name, baseP, dispP, cat) => {
     try {
-        const newBalance = userData.balance - dispPrice;
-        const userRef = doc(db, "users", auth.currentUser.uid);
-        
-        // On prépare l'objet de transaction
-        const transaction = {
-            type: "Activation Bot",
-            name: name,
-            amount: -dispPrice,
-            date: new Date().toLocaleString('fr-FR'),
-            status: "Réussi",
-            icon: "ph-fill ph-cpu"
-        };
+        const user = auth.currentUser;
+        if (!user) return;
 
-        // Mise à jour atomique dans Firebase
-        await updateDoc(userRef, {
-            balance: newBalance,
-            history: arrayUnion(transaction) // C'est ici que l'historique s'enregistre
+        // 1. Récupérer les données fraîches de l'utilisateur pour vérifier le solde
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (!userDoc.exists()) return;
+        
+        const userData = userDoc.data();
+        const currentBalance = userData.balance || 0;
+
+        // 2. Vérification du solde insuffisant
+        if (currentBalance < dispP) {
+            Swal.fire({
+                title: 'Solde insuffisant',
+                text: `Il vous manque ${(dispP - currentBalance).toLocaleString()} FCFA pour activer le forfait ${name}.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#2563EB',
+                cancelButtonColor: '#64748B',
+                confirmButtonText: 'Faire un dépôt',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    openDeposit(); // Ouvre la fenêtre de dépôt si l'utilisateur clique sur le bouton
+                }
+            });
+            return; // Bloque la suite de l'exécution
+        }
+
+        // 3. Si le solde est OK, on procède à l'achat
+        Swal.fire({
+            title: 'Confirmation',
+            text: `Voulez-vous activer le forfait ${name} pour ${dispP.toLocaleString()} FCFA ?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Confirmer l\'IA'
+        }).then(async (res) => {
+            if (res.isConfirmed) {
+                // Débit du solde et enregistrement du forfait (votre logique existante)
+                const newBalance = currentBalance - dispP;
+                await updateDoc(doc(db, "users", user.uid), {
+                    balance: newBalance,
+                    plan: name,
+                    planCat: cat,
+                    planDate: serverTimestamp()
+                });
+
+                Swal.fire("Succès", "Forfait activé avec succès !", "success");
+                // Mettre à jour l'affichage du solde sur l'interface
+                document.getElementById('u-balance').innerText = newBalance.toLocaleString() + " FCFA";
+            }
         });
 
-        Swal.fire("Succès !", `Le bot ${name} est activé.`, "success");
     } catch (e) {
         console.error(e);
-        Swal.fire("Erreur", "Problème de connexion à la base de données.", "error");
+        Swal.fire("Erreur", "Impossible de finaliser l'achat", "error");
     }
 };
 
